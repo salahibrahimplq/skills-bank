@@ -1,0 +1,13 @@
+dashboard.html
+index.json
+_remote/
+sources.txt
+remotes.txt
+skills/_assets/
+skills/ext-*.md
+agents/ext-*.md
+instructions/ext-*.md
+connectors/ai-tools-inventory.md
+*.egg-info/
+__pycache__/
+.venv/
