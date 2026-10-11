@@ -14,6 +14,7 @@ bank ingest-all                 # sweep ~50 AI tools + project folders on this m
 bank fetch anthropics/skills    # pull any GitHub skills repo
 bank dashboard                  # browse
 bank export-skill pdf           # → ~/.claude/skills/pdf  (type /pdf in Claude Code)
+bank export-skill skills-bank   # → /skills-bank in Claude Code: Claude searches & uses your bank itself
 ```
 
 Zero dependencies. Python 3.9+. Everything is Markdown + YAML in a git repo you own.

@@ -9,9 +9,12 @@ import hashlib, json, os, re, sys, time
 from pathlib import Path
 
 def _root():
-    env = os.environ.get("SKILLS_BANK_HOME") or os.environ.get("AI_BANK_HOME")
-    if env:
-        return Path(env).expanduser()
+    for var in ("SKILLS_BANK_HOME", "AI_BANK_HOME"):
+        env = os.environ.get(var)
+        if env and Path(env).expanduser().is_dir():
+            return Path(env).expanduser()
+        if env:
+            print(f"warning: {var}={env} does not exist — ignoring", file=sys.stderr)
     # walk up from cwd looking for a bank (prompts/ + agents/)
     for d in [Path.cwd(), *Path.cwd().parents]:
         if (d / "prompts").is_dir() and (d / "agents").is_dir():
