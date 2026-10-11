@@ -1,6 +1,8 @@
 ---
 name: skills-bank
 description: "Search and use the user's Skills Bank — their library of skills, prompts, agents and rules — via the `bank` CLI. Use when the user types /skills-bank, says 'check my bank', 'do I have a skill/prompt for', 'use my … prompt', 'save this as a skill', 'add to the bank', or when a task likely matches something they've stored."
+metadata:
+  opencode/slash: "true"
 ---
 ## When to use
 - The user invokes /skills-bank, with or without a request after it.

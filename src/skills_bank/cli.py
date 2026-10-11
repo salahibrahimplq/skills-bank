@@ -94,11 +94,33 @@ def cmd_list(args):
 
 
 def cmd_search(args):
-    q = " ".join(args).lower()
+    """search <terms> [--type T] [--project P] [--limit N] -> ranked: id/name > tags/description > body"""
+    typ = args[args.index("--type") + 1] if "--type" in args else None
+    proj = args[args.index("--project") + 1] if "--project" in args else None
+    lim = int(args[args.index("--limit") + 1]) if "--limit" in args else 25
+    skip = {a for i, a in enumerate(args) if a.startswith("--") or (i and args[i - 1] in ("--type", "--project", "--limit"))}
+    terms = [t.lower() for t in args if t not in skip]
+    if not terms: sys.exit("usage: bank search <terms>")
+    scored = []
     for e in entries():
-        hay = json.dumps({k: v for k, v in e.items() if not k.startswith("_")}).lower() + e["_body"].lower()
-        if q in hay:
-            print(f"{e['id']:<36} {e.get('name','')}  ({e['_path']})")
+        if typ and e.get("type") != typ: continue
+        if proj and e.get("project") != proj: continue
+        head = (e["id"] + " " + str(e.get("name", ""))).lower()
+        meta = (" ".join(map(str, e.get("tags") or [])) + " " + str(e.get("description", ""))).lower()
+        body = e["_body"].lower()
+        sc = 0
+        for t in terms:
+            if t in head: sc += 10
+            elif t in meta: sc += 4
+            elif t in body: sc += 1 + min(body.count(t), 4) * 0.25
+            else: sc = -1; break      # every term must appear somewhere
+        if sc > 0:
+            if "external" not in (e.get("tags") or []): sc += 2    # prefer your own entries
+            scored.append((sc, e))
+    scored.sort(key=lambda x: (-x[0], x[1]["id"]))
+    for sc, e in scored[:lim]:
+        print(f"{e['id']:<42} {e.get('type',''):<11} {str(e.get('project','')):<16} {str(e.get('name',''))[:50]}")
+    print(f"{len(scored)} match(es)" + (f", showing top {lim}" if len(scored) > lim else ""))
 
 
 def cmd_show(args):
@@ -142,7 +164,7 @@ inputs: []
 lang: en
 version: 1
 ---
-<write the {typ} here — use {{{{input_name}}}} placeholders>
+<write the {typ} here>
 """, encoding="utf-8")
     print(f"created {p.relative_to(ROOT)}")
     cmd_index([])
@@ -200,7 +222,7 @@ def cmd_export_skill(args):
         trig = e.get("triggers") or []
         if trig: desc += ". Use when the user says: " + ", ".join(str(t) for t in trig)
         desc = desc.replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
-        (d / "SKILL.md").write_text(f'---\nname: {pub}\ndescription: "{desc}"\n---\n{skill_body(e)}\n', encoding="utf-8")
+        (d / "SKILL.md").write_text(f'---\nname: {pub}\ndescription: "{desc}"\nmetadata:\n  opencode/slash: "true"\n---\n{skill_body(e)}\n', encoding="utf-8")   # /name in OpenCode too
         (d / ".skills-bank-export").write_text(eid + "\n")
         a = ROOT / "skills" / "_assets" / eid
         if a.is_dir():
