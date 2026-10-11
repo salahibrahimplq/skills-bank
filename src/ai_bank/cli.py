@@ -141,12 +141,16 @@ version: 1
 <write the {typ} here — use {{{{input_name}}}} placeholders>
 """, encoding="utf-8")
     print(f"created {p.relative_to(ROOT)}")
+    cmd_index([])
 
 
 def cmd_index(args):
     idx = [{k: v for k, v in e.items() if k != "_body"} for e in entries()]
     (ROOT / "index.json").write_text(json.dumps(idx, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"indexed {len(idx)} entries -> index.json")
+    if (ROOT / "dashboard.html").exists() and "--no-dashboard" not in args:   # keep an existing dashboard current
+        try: cmd_dashboard(["--no-open", "--quiet"])
+        except Exception as ex: print("dashboard not rebuilt:", ex)
 
 
 def cmd_deps(args):
@@ -467,8 +471,6 @@ version: {ver}
           + (" (dry run)" if dry else ""))
     if not dry and (new or updated):
         cmd_index([])
-        try: cmd_dashboard(["--no-open"])
-        except Exception as ex: print("dashboard not rebuilt:", ex)
 
 
 SKIP_DIRS = {"node_modules", ".git", ".Trash", "Library/Caches", ".cache", ".npm", ".nvm", ".cocoapods", "Pictures", "Movies", "Music", ".Trash", "DerivedData", "venv", ".venv", "site-packages", "__pycache__"}
@@ -756,7 +758,7 @@ def cmd_dashboard(args):
     except ImportError:  # run as a plain script
         sys.path.insert(0, str(Path(__file__).resolve().parent)); import dashboard
     out = dashboard.build(list(entries()), ROOT / "dashboard.html", ROOT)
-    print(f"built {out}")
+    if "--quiet" not in args: print(f"built {out}")
     if "--no-open" not in args:
         import webbrowser; webbrowser.open(out.as_uri())
 
