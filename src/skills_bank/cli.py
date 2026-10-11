@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AI Bank CLI. Zero dependencies.
+"""Skills Bank CLI. Zero dependencies.
   find:   list search show deps stats dashboard use
   make:   new create-skill validate prune index export-skill unexport
   run:    render run eval
@@ -9,17 +9,18 @@ import hashlib, json, os, re, sys, time
 from pathlib import Path
 
 def _root():
-    env = os.environ.get("AI_BANK_HOME")
+    env = os.environ.get("SKILLS_BANK_HOME") or os.environ.get("AI_BANK_HOME")
     if env:
         return Path(env).expanduser()
     # walk up from cwd looking for a bank (prompts/ + agents/)
     for d in [Path.cwd(), *Path.cwd().parents]:
         if (d / "prompts").is_dir() and (d / "agents").is_dir():
             return d
-    default = Path.home() / ".ai-bank"
-    if (default / "prompts").is_dir():
-        return default
-    sys.exit("No AI Bank found. Set AI_BANK_HOME, or run inside a bank, or clone to " + str(default))
+    for default in (Path.home() / ".skills-bank", Path.home() / ".ai-bank"):
+        if (default / "prompts").is_dir():
+            return default
+    default = Path.home() / ".skills-bank"
+    sys.exit("No Skills Bank found. Set SKILLS_BANK_HOME, or run inside a bank, or clone to " + str(default))
 
 ROOT = _root()
 DIRS = {"prompt": "prompts", "agent": "agents", "workflow": "workflows", "model": "models",
@@ -197,7 +198,7 @@ def cmd_export_skill(args):
         if trig: desc += ". Use when the user says: " + ", ".join(str(t) for t in trig)
         desc = desc.replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
         (d / "SKILL.md").write_text(f'---\nname: {pub}\ndescription: "{desc}"\n---\n{skill_body(e)}\n', encoding="utf-8")
-        (d / ".ai-bank-export").write_text(eid + "\n")
+        (d / ".skills-bank-export").write_text(eid + "\n")
         a = ROOT / "skills" / "_assets" / eid
         if a.is_dir():
             import shutil
@@ -208,13 +209,14 @@ def cmd_export_skill(args):
 
 
 def cmd_unexport(args):
-    """unexport [id|all] [--to DIR] -> remove skills that `export-skill` placed in DIR (marker .ai-bank-export)"""
+    """unexport [id|all] [--to DIR] -> remove skills that `export-skill` placed in DIR (marker .skills-bank-export)"""
     import shutil
     dest = Path(args[args.index("--to") + 1]).expanduser() if "--to" in args else Path("~/.claude/skills").expanduser()
     want = None if not args or args[0] in ("all", "--to") else {args[0], "ext-" + args[0]}
     n = 0
     for d in sorted(dest.iterdir()) if dest.is_dir() else []:
-        m = d / ".ai-bank-export"
+        m = d / ".skills-bank-export"
+        if not m.exists(): m = d / ".ai-bank-export"
         if d.is_dir() and m.exists() and (want is None or m.read_text().strip() in want):
             shutil.rmtree(d); n += 1; print(f"removed {d}")
     print(f"{n} exported skill(s) removed from {dest}")
@@ -341,7 +343,7 @@ DEFAULT_SOURCES = [
 
 
 def _sources(patterns=None):
-    env = os.environ.get("AI_BANK_SOURCES")
+    env = os.environ.get("SKILLS_BANK_SOURCES") or os.environ.get("AI_BANK_SOURCES")
     srcs = list(patterns) if patterns else ([x for x in env.split(os.pathsep) if x] if env else list(DEFAULT_SOURCES))
     cfg = ROOT / "sources.txt"
     if cfg.exists() and not patterns:
@@ -409,7 +411,7 @@ def cmd_ingest(args):
             continue
         for sk in skill_files:
             if "node_modules" in sk.parts: continue
-            if (sk.parent / ".ai-bank-export").exists(): continue   # our own export — never re-ingest
+            if (sk.parent / ".skills-bank-export").exists() or (sk.parent / ".ai-bank-export").exists(): continue   # our own export — never re-ingest
             try:
                 text = sk.read_text(encoding="utf-8", errors="replace")
             except OSError:
@@ -698,7 +700,7 @@ def _repo_slug(spec):
 
 def cmd_fetch(args):
     """fetch <owner/repo|url> [--project P] [--branch B] [--no-assets]   | fetch --update  | fetch --list
-    Clone a GitHub repo into ~/.ai-bank/_remote/<owner>__<repo>, ingest every SKILL.md (+assets), remember it."""
+    Clone a GitHub repo into <bank>/_remote/<owner>__<repo>, ingest every SKILL.md (+assets), remember it."""
     import subprocess
     cache = ROOT / "_remote"; cache.mkdir(exist_ok=True)
     reg = ROOT / "remotes.txt"
@@ -736,7 +738,7 @@ def cmd_fetch(args):
 def cmd_sources(args):
     """sources -> print the directories ingest will scan"""
     for d in _sources(): print(d)
-    print("(override with AI_BANK_SOURCES=dir1:dir2 or pass dirs to `bank ingest`)")
+    print("(override with SKILLS_BANK_SOURCES=dir1:dir2 or pass dirs to `bank ingest`)")
 
 
 def cmd_watch(args):
@@ -765,7 +767,7 @@ def cmd_dashboard(args):
 
 def _mod(name):
     try:
-        import importlib; return importlib.import_module(f"ai_bank.{name}")
+        import importlib; return importlib.import_module(f"skills_bank.{name}")
     except ImportError:
         sys.path.insert(0, str(Path(__file__).resolve().parent)); import importlib; return importlib.import_module(name)
 
@@ -842,7 +844,7 @@ def cmd_use(args):
 
 
 def cmd_mcp(args):
-    """mcp -> run as an MCP stdio server (claude mcp add ai-bank -- bank mcp)"""
+    """mcp -> run as an MCP stdio server (claude mcp add skills-bank -- bank mcp)"""
     _mod("mcp_server").serve()
 
 
@@ -870,7 +872,7 @@ def cmd_serve(args):
                     self.send_response(200); self.send_header("content-type", "text/html; charset=utf-8"); self.end_headers(); self.wfile.write(html); return
                 self._json({"error": "not found"}, 404)
             except KeyError as ex: self._json({"error": f"no entry {ex}"}, 404)
-    print(f"AI Bank API on http://127.0.0.1:{port}  (Ctrl-C to stop)")
+    print(f"Skills Bank API on http://127.0.0.1:{port}  (Ctrl-C to stop)")
     HTTPServer(("127.0.0.1", port), H).serve_forever()
 
 

@@ -85,7 +85,7 @@ def build(entries, out_path, root=None):
 
 TEMPLATE = r"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Bank</title>
+<title>Skills Bank</title>
 <style>
 :root{--bg:#f6f5f1;--card:#fff;--ink:#1c1b18;--mute:#6b6861;--line:#e4e1d9;--acc:#0f5f8a;--warn:#b8552e;--ok:#2e7d4f;--chip:#eeece5;--sel:#e3eef5}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#15161a;--card:#1e2026;--ink:#ecebe6;--mute:#9a9892;--line:#2c2f37;--acc:#6db3dc;--warn:#e58b63;--ok:#6cc08b;--chip:#2a2d35;--sel:#243240}}
@@ -124,7 +124,7 @@ kbd{font:11px ui-monospace,Menlo,monospace;background:var(--chip);padding:1px 5p
 .matrix{overflow:auto}.matrix td,.matrix th{text-align:center;padding:4px 6px}.matrix td.y{background:color-mix(in srgb,var(--acc) 22%,transparent)}.matrix th:first-child,.matrix td:first-child{text-align:left}
 .dep{margin:4px 0}.dep .k{color:var(--mute);font-size:12px}
 </style></head><body>
-<header><h1>AI Bank <small id="gen"></small></h1>
+<header><h1>Skills Bank <small id="gen"></small></h1>
 <nav><button data-tab="overview" class="on">Overview</button><button data-tab="entries">Entries</button><button data-tab="health">Health</button><button data-tab="tools">Tools</button></nav>
 <div class="bar" style="margin:0"><button class="b" onclick="dl('json')">Export JSON</button><button class="b" onclick="dl('csv')">Export CSV</button><button class="b" onclick="theme()">◐</button></div></header>
 <main>
@@ -219,7 +219,7 @@ if(sub==='export'){const ins=e.inputs||[];const pub=e.id.replace(/^ext-/,'');con
  document.getElementById('matrix').innerHTML=`<h3>Skill × tool — where each skill is installed (${tools.length} tools, ${ext.length} skills). Click a cell's row to open.</h3><table><thead><tr><th>skill</th><th>#</th>${tools.map(t=>`<th title="${esc(t)}">${esc(t.length>10?t.slice(0,9)+'…':t)}</th>`).join('')}</tr></thead><tbody>${rows.map(e=>`<tr class="r" data-id="${e.id}"><td class="id">${esc(e.id.replace(/^ext-/,''))}</td><td>${e.tool_count}</td>${tools.map(t=>`<td class="${e.tools.includes(t)?'y':''}">${e.tools.includes(t)?'●':''}</td>`).join('')}</tr>`).join('')}<tr><td><b>total</b></td><td>${ext.length}</td>${tools.map(t=>`<td><b>${D.tool_counts[t]}</b></td>`).join('')}</tr></tbody></table>`;
  document.getElementById('matrix').onclick=e=>{const r=e.target.closest('tr.r');if(r)open_(r.dataset.id)}})();
 // ---- export / theme / keys
-function dl(kind){let blob,name;if(kind==='json'){blob=new Blob([JSON.stringify(E,null,2)],{type:'application/json'});name='ai-bank.json'}else{const cols=['id','type','project','name','version','tool_count','words','external','tags','problems'];const csv=[cols.join(',')].concat(E.map(e=>cols.map(c=>{let v=e[c];if(Array.isArray(v))v=v.join('; ');return '"'+String(v??'').replace(/"/g,'""')+'"'}).join(','))).join('\n');blob=new Blob([csv],{type:'text/csv'});name='ai-bank.csv'}const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}
+function dl(kind){let blob,name;if(kind==='json'){blob=new Blob([JSON.stringify(E,null,2)],{type:'application/json'});name='skills-bank.json'}else{const cols=['id','type','project','name','version','tool_count','words','external','tags','problems'];const csv=[cols.join(',')].concat(E.map(e=>cols.map(c=>{let v=e[c];if(Array.isArray(v))v=v.join('; ');return '"'+String(v??'').replace(/"/g,'""')+'"'}).join(','))).join('\n');blob=new Blob([csv],{type:'text/csv'});name='skills-bank.csv'}const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}
 function theme(){const r=document.documentElement;const cur=r.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');r.dataset.theme=cur==='dark'?'light':'dark';try{localStorage.theme=r.dataset.theme}catch(e){}}
 try{if(localStorage.theme)document.documentElement.dataset.theme=localStorage.theme;if(localStorage.tab)goTab(localStorage.tab)}catch(e){}
 document.addEventListener('keydown',ev=>{if(ev.target.matches('input,textarea,select')){if(ev.key==='Escape')ev.target.blur();return}if(ev.key==='/'){ev.preventDefault();goTab('entries');document.getElementById('q').focus()}if(ev.key==='j'||ev.key==='k'){const i=cur.findIndex(e=>e.id===sel);const n=cur[Math.min(cur.length-1,Math.max(0,i+(ev.key==='j'?1:-1)))];if(n)open_(n.id)}});

@@ -1,12 +1,12 @@
 """Minimal MCP server (stdio, JSON-RPC 2.0, zero deps) exposing the bank to Claude Code / Cowork / any MCP client.
 
-Register in Claude Code:   claude mcp add ai-bank -- bank mcp
-Or in settings JSON:       {"mcpServers": {"ai-bank": {"command": "bank", "args": ["mcp"]}}}
+Register in Claude Code:   claude mcp add skills-bank -- bank mcp
+Or in settings JSON:       {"mcpServers": {"skills-bank": {"command": "bank", "args": ["mcp"]}}}
 """
 import json, sys
 
 TOOLS = [
-    {"name": "bank_search", "description": "Full-text search the AI Bank (prompts, agents, skills, workflows, tools, evals). Returns id, type, project, name, description.",
+    {"name": "bank_search", "description": "Full-text search the Skills Bank (prompts, agents, skills, workflows, tools, evals). Returns id, type, project, name, description.",
      "inputSchema": {"type": "object", "properties": {"query": {"type": "string"}, "type": {"type": "string", "description": "optional: prompt|agent|skill|workflow|tool|eval|dataset|model|connector"}, "project": {"type": "string"}}, "required": ["query"]}},
     {"name": "bank_list", "description": "List entries, optionally filtered by type and/or project.",
      "inputSchema": {"type": "object", "properties": {"type": {"type": "string"}, "project": {"type": "string"}}}},
@@ -82,7 +82,7 @@ def serve():
             continue
         mid, method, params = req.get("id"), req.get("method"), req.get("params") or {}
         if method == "initialize":
-            send({"jsonrpc": "2.0", "id": mid, "result": {"protocolVersion": params.get("protocolVersion", "2024-11-05"), "capabilities": {"tools": {}}, "serverInfo": {"name": "ai-bank", "version": "0.5.0"}}})
+            send({"jsonrpc": "2.0", "id": mid, "result": {"protocolVersion": params.get("protocolVersion", "2024-11-05"), "capabilities": {"tools": {}}, "serverInfo": {"name": "skills-bank", "version": "0.8.0"}}})
         elif method == "notifications/initialized":
             pass
         elif method == "tools/list":

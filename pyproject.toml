@@ -3,8 +3,8 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ai-bank"
-version = "0.7.0"
+name = "skills-bank"
+version = "0.8.0"
 description = "One bank for every AI skill, prompt, agent and rule on your machine — ingest from 50+ AI tools and GitHub, search, render, export to Claude Code, serve over MCP"
 requires-python = ">=3.9"
 readme = "README.md"
@@ -12,14 +12,15 @@ keywords = ["claude", "skills", "prompts", "agents", "mcp", "claude-code", "code
 authors = [{name = "Salah Ibrahim"}]
 
 [project.urls]
-Homepage = "https://github.com/salahibrahimplq/ai-bank"
-Repository = "https://github.com/salahibrahimplq/ai-bank"
+Homepage = "https://github.com/salahibrahimplq/skills-bank"
+Repository = "https://github.com/salahibrahimplq/skills-bank"
 
 [project.license]
 text = "MIT"
 
 [project.scripts]
-bank = "ai_bank.cli:main"
+bank = "skills_bank.cli:main"
+skills-bank = "skills_bank.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

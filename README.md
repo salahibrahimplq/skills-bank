@@ -1,4 +1,4 @@
-# AI Bank
+# Skills Bank
 
 **One bank for every AI skill, prompt, agent and rule on your machine.**
 
@@ -9,7 +9,7 @@ You have skills in `~/.claude`, `~/.codex`, `~/.cursor`, `~/.kiro`, a dozen plug
 ![dashboard](docs/dashboard.png)
 
 ```bash
-pip install git+https://github.com/salahibrahimplq/ai-bank
+pip install git+https://github.com/salahibrahimplq/skills-bank   # installs the `bank` command
 bank ingest-all                 # sweep ~50 AI tools + project folders on this machine
 bank fetch anthropics/skills    # pull any GitHub skills repo
 bank dashboard                  # browse
@@ -66,7 +66,7 @@ expose: mcp serve
 ## Use from Claude Code (MCP)
 
 ```bash
-claude mcp add ai-bank -- bank mcp
+claude mcp add skills-bank -- bank mcp
 ```
 
 Claude gets `bank_search`, `bank_get`, `bank_render`, `bank_deps`, `bank_skill_writer_prompt`, `bank_add` — it can look up and reuse your prompts, or file new ones, mid-task.
@@ -74,7 +74,7 @@ Claude gets `bank_search`, `bank_get`, `bank_render`, `bank_deps`, `bank_skill_w
 ## Use from code
 
 ```python
-from ai_bank import Bank
+from skills_bank import Bank
 b = Bank()
 b.render("code-review", diff=open("x.diff").read(), language="python")
 b.run("code-review", diff=..., language="python")      # calls Claude
@@ -86,11 +86,11 @@ b.search("tender"); b.list(project="jobeng", type="prompt")
 ## Install properly
 
 ```bash
-git clone https://github.com/salahibrahimplq/ai-bank ~/.ai-bank
-sh ~/.ai-bank/install.sh      # pip install, AI_BANK_HOME, launchd job (macOS)
+git clone https://github.com/salahibrahimplq/skills-bank ~/.skills-bank
+sh ~/.skills-bank/install.sh      # pip install, SKILLS_BANK_HOME, launchd job (macOS)
 ```
 
-The bank lives in `~/.ai-bank` (or `$AI_BANK_HOME`). Make it a private git repo of your own — ingested content is yours and may carry third-party licences.
+The bank lives in `~/.skills-bank` (or `$SKILLS_BANK_HOME`). Make it a private git repo of your own — ingested content is yours and may carry third-party licences.
 
 ## Status
 

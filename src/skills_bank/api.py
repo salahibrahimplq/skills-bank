@@ -1,5 +1,5 @@
-"""Python SDK: from ai_bank import Bank
-b = Bank()                                   # finds ~/.ai-bank or AI_BANK_HOME
+"""Python SDK: from skills_bank import Bank
+b = Bank()                                   # finds ~/.skills-bank or SKILLS_BANK_HOME
 b.get("jobeng-cv-screen")                    # dict with metadata + body
 b.render("jobeng-cv-screen", job_description="...", cv_text="...")
 b.run("jobeng-cv-screen", job_description="...", cv_text="...")   # calls Claude (ANTHROPIC_API_KEY)

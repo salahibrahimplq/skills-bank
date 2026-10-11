@@ -1,0 +1,1 @@
+- [Skills Bank](https://github.com/salahibrahimplq/skills-bank) - CLI that ingests skills, prompts, agents and CLAUDE.md files from 50+ AI tools and GitHub into one deduped, git-versioned bank; dashboard, evals, export to Claude Code/Codex/Cursor, MCP server.
