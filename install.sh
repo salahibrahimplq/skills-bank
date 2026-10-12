@@ -14,6 +14,6 @@ if [ "$(uname)" = Darwin ]; then
   cp "$BANK/scripts/com.skillsbank.ingest.plist" "$HOME/Library/LaunchAgents/"
   launchctl unload "$HOME/Library/LaunchAgents/com.skillsbank.ingest.plist" 2>/dev/null || true
   launchctl load "$HOME/Library/LaunchAgents/com.skillsbank.ingest.plist"
-  echo "launchd agent loaded: ingests every 10 min"
+  echo "launchd agent loaded: ingests every 10 hours"
 fi
 echo "done — open a new terminal and run: bank stats"

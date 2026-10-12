@@ -6,7 +6,7 @@
     <string>/bin/sh</string><string>-c</string>
     <string>export SKILLS_BANK_HOME=$HOME/.skills-bank; export PATH=$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH; bank ingest-all; cd $SKILLS_BANK_HOME &amp;&amp; git add -A &amp;&amp; (git -c commit.gpgsign=false commit -qm "auto-ingest $(date +%F)" || true) &amp;&amp; git push -q origin HEAD 2&gt;/dev/null || true</string>
   </array>
-  <key>StartInterval</key><integer>600</integer>
+  <key>StartInterval</key><integer>36000</integer>
   <key>RunAtLoad</key><true/>
   <key>StandardOutPath</key><string>/tmp/skillsbank-ingest.log</string>
   <key>StandardErrorPath</key><string>/tmp/skillsbank-ingest.err</string>

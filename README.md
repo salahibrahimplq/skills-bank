@@ -29,7 +29,7 @@ Zero dependencies. Python 3.9+. Everything is Markdown + YAML in a git repo you 
 | **Use** | `bank render id k=v k=@file` fills `{{placeholders}}`. `bank run id …` sends it to Claude (API key or the logged-in `claude` CLI). `bank eval` runs test cases. Python SDK, HTTP API, MCP server. |
 | **Create** | `bank create-skill "what it should do"` drafts a proper SKILL.md with triggers, inputs, steps, rules; `--improve id "feedback"` iterates. |
 | **Export** | `bank export-skill id` → `~/.claude/skills/id/` with its scripts/assets; `--to dir` for project-scoped; `bank sync-tools` copies to every tool that lacks it; `bank unexport` takes it back. |
-| **Keep** | git-versioned; optional launchd/cron job ingests + commits + pushes every 10 min. |
+| **Keep** | git-versioned; optional launchd/cron job ingests + commits + pushes every 10 hours. |
 
 ## Entry format
 
